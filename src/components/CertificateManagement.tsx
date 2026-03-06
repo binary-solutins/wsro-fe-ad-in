@@ -31,7 +31,7 @@ export default function CertificateManagement() {
 
   const fetchEvents = async (level: string) => {
     try {
-      const response = await fetch(`https://wsro-backend.onrender.com/api/events/level/${level}`, {
+      const response = await fetch(`https://wsroapi.softarotechnolabs.com/api/events/level/${level}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -102,7 +102,7 @@ export default function CertificateManagement() {
         return registration ? registration.teamCode : null;
       }).filter(code => code !== null);
 
-      const response = await fetch('https://wsro-backend.onrender.com/api/competitions/sent-team-certificates', {
+      const response = await fetch('https://wsroapi.softarotechnolabs.com/api/competitions/sent-team-certificates', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -114,7 +114,7 @@ export default function CertificateManagement() {
       });
 
       if (!response.ok) throw new Error('Failed to generate certificates');
-      
+
       toast.success('Certificates generated successfully');
       fetchRegistrations();
       setSelectedTeams(new Set());
@@ -128,14 +128,14 @@ export default function CertificateManagement() {
 
   const filteredAndSortedRegistrations = registrations
     .filter(reg => {
-      const matchesSearch = 
+      const matchesSearch =
         reg.teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.teamCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.leaderEmail.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesEvent = selectedEvent ? reg.event_id === selectedEvent : true;
-   
-      
+
+
       return matchesSearch && matchesEvent;
     })
     .sort((a, b) => {
@@ -149,8 +149,8 @@ export default function CertificateManagement() {
 
   const SortIcon = ({ field }: { field: keyof Registration }) => {
     if (sortField !== field) return <Filter className="w-4 h-4 text-gray-400 group-hover:text-gray-500" />;
-    return sortDirection === 'asc' ? 
-      <ChevronUp className="w-4 h-4 text-indigo-600" /> : 
+    return sortDirection === 'asc' ?
+      <ChevronUp className="w-4 h-4 text-indigo-600" /> :
       <ChevronDown className="w-4 h-4 text-indigo-600" />;
   };
 
@@ -239,7 +239,7 @@ export default function CertificateManagement() {
                       className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                   </th>
-                  <th 
+                  <th
                     onClick={() => handleSort('teamCode')}
                     className="group px-6 py-3 text-left cursor-pointer"
                   >
@@ -250,7 +250,7 @@ export default function CertificateManagement() {
                       <SortIcon field="teamCode" />
                     </div>
                   </th>
-                  <th 
+                  <th
                     onClick={() => handleSort('teamName')}
                     className="group px-6 py-3 text-left cursor-pointer"
                   >
@@ -299,7 +299,7 @@ export default function CertificateManagement() {
               </tbody>
             </table>
           )}
-          
+
           {!isLoading && filteredAndSortedRegistrations.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 px-4">
               <Search className="w-12 h-12 text-gray-400 mb-4" />

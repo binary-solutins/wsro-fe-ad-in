@@ -14,10 +14,25 @@ import RegistrationList from './components/RegistrationList';
 import EventList from './components/Events/EventList';
 import InquiryList from './components/Inquery';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [auth] = useAtom(authAtom);
+import { useEffect } from 'react';
 
-  if (!auth?.isAuthenticated) {
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const [auth, setAuth] = useAtom(authAtom);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && !auth.isAuthenticated) {
+      // Hydrate state from stored token if page was refreshed
+      setAuth({
+        token,
+        user: null, // Depending on if we store user string locally; we can just restore token
+        isAuthenticated: true,
+      });
+    }
+  }, [auth.isAuthenticated, setAuth]);
+
+  // Give effect a moment to assert before kicking to login
+  if (!auth?.isAuthenticated && !localStorage.getItem('token')) {
     return <Navigate to="/login" replace />;
   }
 
@@ -28,30 +43,30 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <>
-    <BrowserRouter>
-  <Routes>
-    {/* Public route: Login page should be accessible without authentication */}
-    <Route path="/login" element={<LoginPage />} />
+      <BrowserRouter>
+        <Routes>
+          {/* Public route: Login page should be accessible without authentication */}
+          <Route path="/login" element={<LoginPage />} />
 
-    {/* Protected Routes: Everything inside AdminLayout is protected */}
-    <Route
-      path="/"
-      element={
-        <ProtectedRoute>
-          <AdminLayout />
-        </ProtectedRoute>
-      }
-    >
-      <Route index element={<Dashboard />} />
-      <Route path="competitions" element={<CompetitionList />} />
-      <Route path="events" element={<EventList />} />
-      <Route path="registrations" element={<RegistrationList />} />
-      <Route path="certificates" element={<CertificateManagement />} />
-      <Route path="settings" element={<Settings />} />
-      <Route path="inquery" element={<InquiryList />} />
-    </Route>
-  </Routes>
-</BrowserRouter>
+          {/* Protected Routes: Everything inside AdminLayout is protected */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="competitions" element={<CompetitionList />} />
+            <Route path="events" element={<EventList />} />
+            <Route path="registrations" element={<RegistrationList />} />
+            <Route path="certificates" element={<CertificateManagement />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="inquery" element={<InquiryList />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
 
       <Toaster position="top-right" />
     </>

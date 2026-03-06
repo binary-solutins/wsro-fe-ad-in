@@ -9,7 +9,7 @@ export function useEvents() {
   const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://wsro-backend.onrender.com/api/events', {
+      const response = await fetch('https://wsroapi.softarotechnolabs.com/api/events', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -25,7 +25,7 @@ export function useEvents() {
   }, []);
 
   const addEvent = useCallback(async (event: Event) => {
-    const response = await fetch('https://wsro-backend.onrender.com/api/events/new', {
+    const response = await fetch('https://wsroapi.softarotechnolabs.com/api/events/new', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export function useEvents() {
   }, []);
 
   const deleteEvent = useCallback(async (id: string) => {
-    const response = await fetch(`https://wsro-backend.onrender.com/api/events/${id}`, {
+    const response = await fetch(`https://wsroapi.softarotechnolabs.com/api/events/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,

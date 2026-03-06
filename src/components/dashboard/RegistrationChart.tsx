@@ -28,7 +28,7 @@ const RegistrationChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://wsro-backend.onrender.com/api/admin/registrations', {
+        const response = await axios.get('https://wsroapi.softarotechnolabs.com/api/admin/registrations', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

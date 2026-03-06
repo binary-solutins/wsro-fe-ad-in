@@ -6,32 +6,33 @@ import { authAtom } from '../store/auth';
 import { loginUser } from '../utils/api';
 function LoginPage() {
   const [, setAuth] = useAtom(authAtom);
-const navigate = useNavigate();
-const [isLoading, setIsLoading] = useState(false);
-const [formData, setFormData] = useState({
-email: 'user@example.com',
-password: 'string'
-});
-
-const handleSubmit = async (e: React.FormEvent) => {
-e.preventDefault();
-setIsLoading(true);
-
-
-try {
-  const data = await loginUser(formData.email, formData.password);
-  setAuth({
-    token: data.token,
-    user: data.user,
-    isAuthenticated: true,
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
   });
-  navigate('/');
-} catch (error) {
-  console.error('Login failed:', error);
-} finally {
-  setIsLoading(false);
-}
-};
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+
+    try {
+      const data = await loginUser(formData.email, formData.password);
+      localStorage.setItem('token', data.token);
+      setAuth({
+        token: data.token,
+        user: data.user,
+        isAuthenticated: true,
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <main className="fixed inset-0 bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden">
       <div className="relative w-full max-w-md">

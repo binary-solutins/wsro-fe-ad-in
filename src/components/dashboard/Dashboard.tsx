@@ -1,8 +1,6 @@
 import {
   Trophy,
   Users,
-  CreditCard,
-  ScrollText,
   TrendingUp,
   Calendar,
   Plus,
@@ -22,7 +20,7 @@ import {
 
 export default function Dashboard() {
   const [compData, setCompData] = useState(0);
-  const [totalRegistrations, setTotalRegistrations] = useState(null);
+  const [totalRegistrations, setTotalRegistrations] = useState<number>(0);
   const [pendingInquery, setPendingInquery] = useState(0);
   const [totalEvents, setTotalEvents] = useState(0);
   useEffect(() => {
@@ -31,8 +29,8 @@ export default function Dashboard() {
   const getCardDetails = async () => {
     let res1 = await fetchCompetitions();
     let active_comp = res1
-      .filter((item) => item.is_active === 1)
-      .map((item) => {
+      .filter((item: any) => item.is_active === 1)
+      .map((item: any) => {
         return item;
       });
     setCompData(active_comp.length);
@@ -46,45 +44,49 @@ export default function Dashboard() {
     setTotalEvents(totalEvent);
 
     const res4 = await fetchInquiries();
-    let pendingInqueries = res4.filter((item) => item.is_resolved == 0);
+    let pendingInqueries = res4.filter((item: any) => item.is_resolved == 0);
     setPendingInquery(pendingInqueries.length);
+
+    // Dynamic upcoming competitions logic mapping
+    // We reverse or sort the active ones (we'll just take top 3 active for now as "upcoming", sorted by date)
+    const upcoming = active_comp
+      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 3)
+      .map((comp: any) => ({
+        name: comp.competition_name || comp.title,
+        date: comp.end_date || comp.created_at, // Use end_date as proxy for event date, fallback to created_at
+        participants: res2.filter((r: any) => r.competition_id === comp.id).length || 0
+      }));
+    setUpcomingEvents(upcoming);
   };
+
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
 
   const stats = [
     {
       title: "Active Competitions",
-      value: compData,
+      value: compData.toString(),
       icon: Trophy,
       color: "bg-purple-500",
     },
     {
       title: "Total Registrations",
-      value: totalRegistrations || "0",
+      value: totalRegistrations ? totalRegistrations.toString() : "0",
       icon: Users,
       color: "bg-blue-500",
     },
     {
       title: "Total Events",
-      value: totalEvents,
+      value: totalEvents.toString(),
       icon: FunctionSquare,
       color: "bg-green-500",
     },
     {
       title: "Pending Inquery",
-      value: pendingInquery,
+      value: pendingInquery.toString(),
       icon: MessageCircle,
       color: "bg-yellow-500",
     },
-  ];
-
-  const upcomingEvents = [
-    {
-      name: "regionalal Finals - North",
-      date: "2024-04-15",
-      participants: 120,
-    },
-    { name: "National Championship", date: "2024-05-01", participants: 500 },
-    { name: "International Summit", date: "2024-06-15", participants: 1000 },
   ];
 
   return (
@@ -139,16 +141,18 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-gray-900">
                 Upcoming Events
               </h2>
-              <p className="text-sm text-gray-500">Next 30 days schedule</p>
+              <p className="text-sm text-gray-500">Scheduled upcoming active competitions</p>
             </div>
             <div className="p-2 rounded-lg bg-gray-50">
               <Calendar className="w-5 h-5 text-gray-400" />
             </div>
           </div>
           <div className="space-y-4">
-            {upcomingEvents.map((event) => (
-              <EventCard key={event.name} {...event} />
-            ))}
+            {upcomingEvents.length > 0 ? upcomingEvents.map((event, index) => (
+              <EventCard key={index} {...event} />
+            )) : (
+              <p className="text-gray-500 text-sm animate-pulse">Loading upcoming events...</p>
+            )}
           </div>
         </div>
       </div>

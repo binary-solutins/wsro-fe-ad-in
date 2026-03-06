@@ -64,14 +64,14 @@ const LevelBadge = ({ level }: { level: Competition['level'] }) => {
   );
 };
 
-const FormField = ({ 
-  label, 
-  icon: Icon, 
+const FormField = ({
+  label,
+  icon: Icon,
   children,
-  className = '' 
-}: { 
-  label: string; 
-  icon?: LucideIcon; 
+  className = ''
+}: {
+  label: string;
+  icon?: LucideIcon;
   children: React.ReactNode;
   className?: string;
 }) => (
@@ -84,19 +84,19 @@ const FormField = ({
   </div>
 );
 
-const CompetitionForm = ({ 
-  formData, 
-  setFormData 
-}: { 
-  formData: Competition; 
-  setFormData: React.Dispatch<React.SetStateAction<Competition>>; 
+const CompetitionForm = ({
+  formData,
+  setFormData
+}: {
+  formData: Competition;
+  setFormData: React.Dispatch<React.SetStateAction<Competition>>;
 }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false); // Loader state
 
   const fetchEvents = async (level: string) => {
     try {
-      const response = await axios.get(`https://wsro-backend.onrender.com/api/events/level/${level.toLowerCase()}`);
+      const response = await axios.get(`https://wsroapi.softarotechnolabs.com/api/events/level/${level.toLowerCase()}`);
       setEvents(response.data);
     } catch (error) {
       console.error('Failed to fetch events:', error);
@@ -283,8 +283,8 @@ export default function CompetitionModal({ competition, onClose, onSave }: Compe
     level: competition?.level || 'regionalal',
     date: competition?.date ? new Date(competition.date).toISOString().split('T')[0] : '',
     venue: competition?.venue || '',
-    registration_deadline: competition?.registration_deadline 
-      ? new Date(competition.registration_deadline).toISOString().split('T')[0] 
+    registration_deadline: competition?.registration_deadline
+      ? new Date(competition.registration_deadline).toISOString().split('T')[0]
       : '',
     maximum_teams: competition?.maximum_teams || 0,
     fees: competition?.fees.toString() || '', // Ensure fees is a string
@@ -307,18 +307,18 @@ export default function CompetitionModal({ competition, onClose, onSave }: Compe
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in fade-in-0 zoom-in-95">
         <div className="relative">
-          <ModalHeader 
-            title={competition ? 'Edit Competition' : 'New Competition'} 
-            onClose={onClose} 
+          <ModalHeader
+            title={competition ? 'Edit Competition' : 'New Competition'}
+            onClose={onClose}
           />
-          
+
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <LevelBadge level={formData.level} />
-            <CompetitionForm 
-              formData={formData} 
+            <CompetitionForm
+              formData={formData}
               setFormData={setFormData}
             />
-            
+
             <div className="flex justify-end gap-3 pt-4 border-t">
               <button
                 type="button"
